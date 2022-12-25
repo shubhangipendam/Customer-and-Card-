@@ -1,6 +1,6 @@
-const cardModel = require("../models/cardModel")
-const customerModel = require("../models/customerModel")
-const validators = require("../validators/validators")
+const cardModel = require("../model/cardModel")
+const customerModel = require("../model/customerModel")
+const validators = require("../validation/validator")
 
 const { isEmpty, isValidBody, } = validators
 
@@ -17,19 +17,18 @@ const createCard = async function (req, res) {
         if (findCard) return res.status(400).send({ status: false, message: "card allrady created for this customer" })
 
         const findCustomer = await customerModel.findOne({ customerID: customerID })
-        if (!findCustomer) return res.status(404).send({ status: false, message: "No customer found for this id" })
-        if (findCustomer.isDeleted) return res.status(400).send({ status: false, message: "custemer is deleated allrady" })
+        if (!findCustomer) return res.status(404).send({ status: false, message: "No customer is found" })
+        if (findCustomer.isDeleted) return res.status(400).send({ status: false, message: "custemer is already deleted" })
 
 
 
         if (!cardType) return res.status(400).send({ status: false, message: "Cardtype is required" })
-        if (!(["regular", "special"].includes(cardType))) return res.status(400).send({ status: false, message: "Cardtype is invalide, provied regular/special" })
+        if (!(["regular", "special"].includes(cardType))) return res.status(400).send({ status: false, message: "Cardtype is invalidel" })
 
-        if (!vision) return res.status(400).send({ status: false, message: "vission is required" })
-        if (typeof (vision) !== "string") return res.status(400).send({ status: false, message: "vission must be a stering" })
-
+        if (!vision) return res.status(400).send({ status: false, message: "vision is required" })
+        
         let cardpresent = await cardModel.find().count()
-        let cardNumber = "c" + (00 + (++cardpresent))
+        let cardNumber = "C" + (00 + (++cardpresent))
 
         data.cardNumber = cardNumber
         data.customerName = findCustomer.firstName + " " + findCustomer.lastName
